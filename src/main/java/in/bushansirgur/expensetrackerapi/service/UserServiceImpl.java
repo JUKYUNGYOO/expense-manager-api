@@ -43,7 +43,13 @@ public class UserServiceImpl implements UserService {
         existingUser.setEmail(user.getEmail() != null ? user.getEmail():existingUser.getEmail());
         existingUser.setPassword(user.getPassword() != null ? user.getPassword():existingUser.getPassword());
         existingUser.setAge(user.getAge() != null ? user.getAge():existingUser.getAge());
-        return existingUser;
+        return userRepo.save(existingUser);
+    }
+    @Override
+    public void deleteUser(Long id){
+        User existingUser = readUser(id);
+        userRepo.delete(existingUser);
+
     }
 
 
