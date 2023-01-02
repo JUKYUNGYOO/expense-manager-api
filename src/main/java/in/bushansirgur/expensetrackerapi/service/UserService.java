@@ -10,6 +10,7 @@ public interface UserService {
 
     User updateUser(UserModel user, Long id);
     void deleteUser(Long id);
+    User getLoggedInUser();
 
 
 }
