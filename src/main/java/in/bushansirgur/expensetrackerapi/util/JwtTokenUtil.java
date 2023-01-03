@@ -1,5 +1,6 @@
 package in.bushansirgur.expensetrackerapi.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,7 @@ import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 public class JwtTokenUtil {
@@ -29,4 +31,30 @@ public class JwtTokenUtil {
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
+
+    public String getUsernameFromToken(String jwtToken){
+        return getClaimFromToken(jwtToken, Claims::getSubject);
+    }
+//generic type T, return type T
+    private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return claimsResolver.apply(claims);
+
+    }
+
+    public boolean validateToken(String jwtToken, UserDetails userDetails) {
+        final String username = getUsernameFromToken(jwtToken);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(jwtToken);
+
+    }
+
+    private boolean isTokenExpired(String jwtToken) {
+        final Date expiration = getExpirationDateFromToken(jwtToken);
+        return expiration.before(new Date());
+    }
+
+    private Date getExpirationDateFromToken(String jwtToken) {
+        return getClaimFromToken(jwtToken, Claims::getExpiration);
+    }
+
 }
