@@ -38,15 +38,16 @@ public class UserServiceImpl implements UserService {
 //        target :  복사 대상 객체
     }
     @Override
-    public User readUser(Long id){
-        return userRepo.findById(id).orElseThrow(()->
-                new ResourceNotFoundException("User not found for the id:" + id));
+    public User readUser(){
+        Long userId = getLoggedInUser().getId();
+        return userRepo.findById(userId).orElseThrow(()->
+                new ResourceNotFoundException("User not found for the id:"));
 
     }
 
     @Override
-    public User updateUser(UserModel user, Long id) {
-        User existingUser = readUser(id);
+    public User updateUser(UserModel user) {
+        User existingUser = readUser();
         existingUser.setName(user.getName() != null ? user.getName():existingUser.getName());
         existingUser.setEmail(user.getEmail() != null ? user.getEmail():existingUser.getEmail());
         existingUser.setPassword(user.getPassword() != null ? bcryptEncoder.encode(user.getPassword()):existingUser.getPassword());
@@ -54,8 +55,8 @@ public class UserServiceImpl implements UserService {
         return userRepo.save(existingUser);
     }
     @Override
-    public void deleteUser(Long id){
-        User existingUser = readUser(id);
+    public void deleteUser(){
+        User existingUser = readUser();
         userRepo.delete(existingUser);
 
     }
