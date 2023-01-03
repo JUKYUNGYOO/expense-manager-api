@@ -1,6 +1,7 @@
 package in.bushansirgur.expensetrackerapi.repository;
 
 import java.sql.Date;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +25,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 	Page<Expense> findByDateBetween(Date startDate, Date endDate, Pageable page);
 
 	Page<Expense> findByUserId(Long userId, Pageable page);
+
+	Optional<Expense> findByUserIdAndId(Long userId, Long expenseId);
 }
